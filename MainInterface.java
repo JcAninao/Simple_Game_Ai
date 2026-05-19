@@ -13,9 +13,8 @@ public class MainInterface {
     static ArrayList<String> moves_log = new ArrayList<>();
     public static void main(String[] args) {
         System.out.println("Tic Tac Toe! Enter your player name!");
-//        String player_name = scanner.nextLine();
-        String player_name = "tmp_player_name";
-        System.out.println("Tic Tac Toe! Choose your token:\n" +
+        player_name = scanner.nextLine();
+        System.out.println("Choose your token:\n" +
                 "- [X] - First to move\n" +
                 "- [O] - Second to move\n" +
                 "to play against the computer!");
@@ -27,7 +26,7 @@ public class MainInterface {
         }
 
         player_token = Character.toUpperCase(user_token_placeholder.charAt(0));
-        System.out.println("You chose " + player_token + ". The computer will be " +
+        System.out.println(player_name + " chose " + player_token + ". The computer will be " +
                 (Character.toString(player_token).equalsIgnoreCase("x") ? 'O' : 'X') + ".");
 
 
