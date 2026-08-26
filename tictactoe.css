@@ -1,0 +1,270 @@
+:root {
+    --ink: #25324a;
+    --purple: #7257d9;
+    --purple-dark: #5941bb;
+    --yellow: #ffd166;
+    --mint: #b8f2d0;
+    --mint-dark: #8bd2ae;
+    --pink: #ff9fbb;
+    --pink-dark: #e77f9e;
+    --blue: #8ed8ff;
+    --blue-dark: #68b9e2;
+    --cream: #fff8ed;
+    --sidebar: #fff0c8;
+    --sidebar-border: #f5d98c;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+}
+
+.app-container {
+    min-height: 100vh;
+    background: var(--cream);
+}
+
+.game-header {
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    background: var(--purple);
+    color: white;
+    box-shadow: 0 5px 0 var(--purple-dark);
+}
+
+.game-header h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    letter-spacing: 0.5px;
+}
+
+.game-sidebar {
+    background: var(--sidebar);
+    border-right: 3px solid var(--sidebar-border);
+}
+
+.sidebar-title {
+    margin: 0 0 22px;
+    font-size: 1.35rem;
+}
+
+.game-link {
+    width: 100%;
+    border: 0;
+    border-radius: 16px;
+    padding: 16px;
+    margin: 5px 0;
+    text-align: left;
+    background: transparent;
+    color: var(--ink);
+    font-weight: bold;
+    font-size: 1rem;
+    transition: 0.2s ease;
+}
+
+.game-link:not(:disabled):hover,
+.game-link.active {
+    background: white;
+    box-shadow: 0 4px 0 #e7cb82;
+    transform: translateY(-1px);
+}
+
+.game-link:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.game-main {
+    padding: 48px 7%;
+    text-align: center;
+}
+
+.intro {
+    max-width: 650px;
+    margin: 0 auto 30px;
+}
+
+.intro h2 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.intro p {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #59657a;
+}
+
+.setup-card {
+    border-radius: 28px;
+}
+
+.game-card {
+    border-radius: 28px;
+}
+
+.move-log-card {
+    border-radius: 22px;
+    text-align: left;
+}
+
+.game-info {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    color: #59657a;
+}
+
+.status {
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: min(100%, 360px);
+    margin: auto;
+}
+
+.cell {
+    aspect-ratio: 1;
+    border: 0;
+    border-radius: 18px;
+    font-size: clamp(2.5rem, 10vw, 4.5rem);
+    font-weight: bold;
+    color: var(--purple);
+    transition: 0.15s ease;
+}
+
+.cell-0,
+.cell-3,
+.cell-6 {
+    background: var(--mint);
+    box-shadow: inset 0 -5px 0 var(--mint-dark);
+}
+
+.cell-1,
+.cell-4,
+.cell-7 {
+    background: var(--blue);
+    box-shadow: inset 0 -5px 0 var(--blue-dark);
+}
+
+.cell-2,
+.cell-5,
+.cell-8 {
+    background: var(--pink);
+    box-shadow: inset 0 -5px 0 var(--pink-dark);
+}
+
+.cell:not(:disabled):hover {
+    transform: translateY(-2px);
+    filter: brightness(1.03);
+}
+
+.cell:disabled {
+    cursor: default;
+    opacity: 0.9;
+}
+
+.move-log {
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+.move-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.move-item:last-child {
+    border-bottom: 0;
+}
+
+@media (max-width: 991px) {
+    .game-header {
+        min-height: 82px;
+    }
+
+    .game-sidebar {
+        border-right: 0;
+        border-bottom: 3px solid var(--sidebar-border);
+    }
+
+    .game-sidebar > div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow-x: auto;
+    }
+
+    .sidebar-title {
+        display: none;
+    }
+
+    .game-link {
+        min-width: 160px;
+        margin: 0;
+    }
+
+    .game-main {
+        padding: 42px 5%;
+    }
+}
+
+@media (max-width: 600px) {
+    .game-main {
+        padding: 30px 16px;
+    }
+
+    .setup-card,
+    .game-card {
+        border-radius: 22px;
+    }
+
+    .intro h2 {
+        font-size: 1.7rem;
+    }
+
+    .intro p {
+        font-size: 1rem;
+    }
+
+    .game-info {
+        gap: 10px;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-header {
+        min-height: 72px;
+    }
+
+    .game-header h1 {
+        font-size: 2rem;
+    }
+
+    .board {
+        gap: 7px;
+    }
+
+    .cell {
+        border-radius: 12px;
+    }
+}
