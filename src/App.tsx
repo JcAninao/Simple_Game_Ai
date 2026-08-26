@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     createInitialGame,
     makePlayerMove,
@@ -7,33 +7,69 @@ import {
 
 import type {
     GameState,
-    MoveLog
+    MoveLog,
+    Token
 } from "./tictactoe_ai";
 
 function App() {
     const [playerName, setPlayerName] = useState("");
-    const [selectedToken, setSelectedToken] = useState<"X" | "O">("X");
+    const [selectedToken, setSelectedToken] = useState<Token>("X");
     const [gameStarted, setGameStarted] = useState(false);
+    const [showTokenSelection, setShowTokenSelection] = useState(false);
     const [game, setGame] = useState<GameState | null>(null);
 
-    const startGame = () => {
+    const gameSectionRef = useRef<HTMLDivElement>(null);
+
+    const startFirstGame = () => {
         const name = playerName.trim() || "You";
-        
-        const newGame = createInitialGame(name, selectedToken);
 
         setPlayerName(name);
+
+        const newGame = createInitialGame(
+            name,
+            selectedToken
+        );
+
         setGame(newGame);
         setGameStarted(true);
+
+        setTimeout(() => {
+            gameSectionRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }, 100);
     };
 
-    const resetGame = () => {
-        setGame(null);
-        setGameStarted(false);
-        setPlayerName("");
-        setSelectedToken("X");
+    const startNewGame = () => {
+        if (!playerName) {
+            return;
+        }
+
+        setShowTokenSelection(true);
     };
 
-    const handlePlayerMove = (row: number, col: number) => {
+    const confirmNewGame = () => {
+        const newGame = createInitialGame(
+            playerName,
+            selectedToken
+        );
+
+        setGame(newGame);
+        setShowTokenSelection(false);
+
+        setTimeout(() => {
+            gameSectionRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }, 100);
+    };
+
+    const handlePlayerMove = (
+        row: number,
+        col: number
+    ) => {
         if (
             !game ||
             game.gameOver ||
@@ -42,7 +78,13 @@ function App() {
             return;
         }
 
-        setGame(makePlayerMove(game, row, col));
+        setGame(
+            makePlayerMove(
+                game,
+                row,
+                col
+            )
+        );
     };
 
     useEffect(() => {
@@ -56,11 +98,16 @@ function App() {
 
         const timer = setTimeout(() => {
             setGame(currentGame => {
-                if (!currentGame || currentGame.gameOver) {
+                if (
+                    !currentGame ||
+                    currentGame.gameOver
+                ) {
                     return currentGame;
                 }
 
-                return makeComputerMove(currentGame);
+                return makeComputerMove(
+                    currentGame
+                );
             });
         }, 500);
 
@@ -68,99 +115,108 @@ function App() {
     }, [game]);
 
     if (!gameStarted || !game) {
-        return (
-            <div className="app-container">
-                <header className="game-header">
-                    <div className="container">
-                        <h1>Simple Games</h1>
-                    </div>
-                </header>
+    return (
+        <div className="app-container">
+            <header className="game-header">
+                <div className="container">
+                    <h1>Simple Games</h1>
+                </div>
+            </header>
 
-                <main className="container py-5">
-                    <div className="row justify-content-center">
-                        <div className="col-md-7 col-lg-5">
-                            <div className="setup-card card border-0 shadow">
-                                <div className="card-body p-4 p-md-5">
-                                    <h2 className="text-center mb-4">
-                                        Tic-Tac-Toe
-                                    </h2>
+            <main className="container py-5">
+                <div className="row justify-content-center">
+                    <div className="col-md-7 col-lg-5">
+                        <div className="setup-card card border-0 shadow">
+                            <div className="card-body p-4 p-md-5">
+                                <h2 className="text-center mb-4">
+                                    Tic-Tac-Toe
+                                </h2>
 
-                                    <div className="mb-3">
-                                        <label className="form-label">
-                                            Player Name
-                                        </label>
+                                <div className="mb-3">
+                                    <label className="form-label">
+                                        Player Name
+                                    </label>
 
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={playerName}
-                                            onChange={e =>
-                                                setPlayerName(e.target.value)
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={playerName}
+                                        onChange={e =>
+                                            setPlayerName(
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder="Enter your name"
+                                        onKeyDown={e => {
+                                            if (
+                                                e.key === "Enter"
+                                            ) {
+                                                startFirstGame();
                                             }
-                                            placeholder="Enter your name"
-                                        />
-                                    </div>
-
-                                    <div className="mb-4">
-                                        <label className="form-label">
-                                            Choose your token
-                                        </label>
-
-                                        <div className="d-flex gap-2">
-                                            <button
-                                                type="button"
-                                                className={`btn flex-fill ${
-                                                    selectedToken === "X"
-                                                        ? "btn-primary"
-                                                        : "btn-outline-primary"
-                                                }`}
-                                                onClick={() =>
-                                                    setSelectedToken("X")
-                                                }
-                                            >
-                                                X
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                className={`btn flex-fill ${
-                                                    selectedToken === "O"
-                                                        ? "btn-primary"
-                                                        : "btn-outline-primary"
-                                                }`}
-                                                onClick={() =>
-                                                    setSelectedToken("O")
-                                                }
-                                            >
-                                                O
-                                            </button>
-                                        </div>
-
-                                        <small className="text-muted d-block mt-2">
-                                            X always moves first.
-                                        </small>
-                                    </div>
-
-                                    <button
-                                        className="btn btn-primary w-100"
-                                        onClick={startGame}
-                                    >
-                                        Start Game
-                                    </button>
+                                        }}
+                                    />
                                 </div>
+
+                                <div className="mb-4">
+                                    <label className="form-label">
+                                        Choose your token
+                                    </label>
+
+                                    <div className="d-flex gap-2">
+                                        <button
+                                            type="button"
+                                            className={`btn flex-fill ${
+                                                selectedToken === "X"
+                                                    ? "btn-primary"
+                                                    : "btn-outline-primary"
+                                            }`}
+                                            onClick={() =>
+                                                setSelectedToken("X")
+                                            }
+                                        >
+                                            X
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            className={`btn flex-fill ${
+                                                selectedToken === "O"
+                                                    ? "btn-primary"
+                                                    : "btn-outline-primary"
+                                            }`}
+                                            onClick={() =>
+                                                setSelectedToken("O")
+                                            }
+                                        >
+                                            O
+                                        </button>
+                                    </div>
+
+                                    <small className="text-muted d-block mt-2">
+                                        X always moves first.
+                                    </small>
+                                </div>
+
+                                <button
+                                    className="btn btn-primary w-100"
+                                    onClick={startFirstGame}
+                                >
+                                    Start Game
+                                </button>
                             </div>
                         </div>
                     </div>
-                </main>
-            </div>
-        );
-    }
+                </div>
+            </main>
+        </div>
+    );
+}
 
-    const statusText = game.gameOver
-        ? game.result
-        : game.currentTurn === game.playerToken
-        ? `${game.playerName}'s turn`
-        : "Computer's turn";
+const statusText = game.gameOver
+    ? game.result
+    : game.currentTurn === game.playerToken
+    ? `${game.playerName}'s turn`
+    : "Computer's turn";
 
     return (
         <div className="app-container">
@@ -203,13 +259,17 @@ function App() {
                         </div>
                     </aside>
 
-                    <main className="col-lg-9 col-xl-10 game-main">
+                    <main
+                        className="col-lg-9 col-xl-10 game-main"
+                        ref={gameSectionRef}
+                    >
                         <div className="intro">
                             <h2>Tic-Tac-Toe</h2>
 
                             <p>
-                                Play against the computer. Get three of your
-                                tokens in a row to win.
+                                Play against the computer.
+                                Get three of your tokens in
+                                a row to win.
                             </p>
                         </div>
 
@@ -219,18 +279,30 @@ function App() {
                                     <div className="card-body p-3 p-md-4">
                                         <div className="game-info">
                                             <div>
-                                                <strong>Player:</strong>{" "}
-                                                {game.playerName}
+                                                <strong>
+                                                    Player:
+                                                </strong>{" "}
+                                                {
+                                                    game.playerName
+                                                }
                                             </div>
 
                                             <div>
-                                                <strong>Your token:</strong>{" "}
-                                                {game.playerToken}
+                                                <strong>
+                                                    Your token:
+                                                </strong>{" "}
+                                                {
+                                                    game.playerToken
+                                                }
                                             </div>
 
                                             <div>
-                                                <strong>Computer:</strong>{" "}
-                                                {game.computerToken}
+                                                <strong>
+                                                    Computer:
+                                                </strong>{" "}
+                                                {
+                                                    game.computerToken
+                                                }
                                             </div>
                                         </div>
 
@@ -239,40 +311,60 @@ function App() {
                                         </div>
 
                                         <div className="board">
-                                            {game.board.map((cell, index) => {
-                                                const row = Math.floor(
-                                                    index / 3
-                                                );
-                                                const col = index % 3;
+                                            {game.board.map(
+                                                (
+                                                    cell,
+                                                    index
+                                                ) => {
+                                                    const row =
+                                                        Math.floor(
+                                                            index /
+                                                                3
+                                                        );
 
-                                                return (
-                                                    <button
-                                                        key={index}
-                                                        type="button"
-                                                        className={`cell cell-${index % 3}`}
-                                                        disabled={
-                                                            cell !== "" ||
-                                                            game.gameOver ||
-                                                            game.currentTurn !==
-                                                                game.playerToken
-                                                        }
-                                                        onClick={() =>
-                                                            handlePlayerMove(
-                                                                row,
-                                                                col
-                                                            )
-                                                        }
-                                                    >
-                                                        {cell}
-                                                    </button>
-                                                );
-                                            })}
+                                                    const col =
+                                                        index %
+                                                        3;
+
+                                                    return (
+                                                        <button
+                                                            key={
+                                                                index
+                                                            }
+                                                            type="button"
+                                                            className={`cell cell-${
+                                                                index %
+                                                                3
+                                                            }`}
+                                                            disabled={
+                                                                cell !==
+                                                                    "" ||
+                                                                game.gameOver ||
+                                                                game.currentTurn !==
+                                                                    game.playerToken
+                                                            }
+                                                            onClick={() =>
+                                                                handlePlayerMove(
+                                                                    row,
+                                                                    col
+                                                                )
+                                                            }
+                                                        >
+                                                            {
+                                                                cell
+                                                            }
+                                                        </button>
+                                                    );
+                                                }
+                                            )}
                                         </div>
 
                                         <div className="text-center mt-4">
                                             <button
                                                 className="btn btn-warning px-4"
-                                                onClick={resetGame}
+                                                onClick={
+                                                    startNewGame
+                                                }
                                             >
                                                 New Game
                                             </button>
@@ -288,13 +380,17 @@ function App() {
                                             Move Log
                                         </h3>
 
-                                        {game.movesLog.length === 0 ? (
+                                        {game.movesLog
+                                            .length ===
+                                        0 ? (
                                             <p className="text-muted mb-0">
                                                 No moves yet.
                                             </p>
                                         ) : (
                                             <div className="move-log">
-                                                {[...game.movesLog]
+                                                {[
+                                                    ...game.movesLog
+                                                ]
                                                     .reverse()
                                                     .map(
                                                         (
@@ -306,7 +402,9 @@ function App() {
                                                                 key={`${move.coordinate}-${index}`}
                                                             >
                                                                 <span>
-                                                                    {move.token}{" "}
+                                                                    {
+                                                                        move.token
+                                                                    }{" "}
                                                                     at{" "}
                                                                     {
                                                                         move.coordinate
@@ -330,6 +428,82 @@ function App() {
                     </main>
                 </div>
             </div>
+
+            {showTokenSelection && (
+                <div className="modal-backdrop-custom">
+                    <div className="token-modal card border-0 shadow">
+                        <div className="card-body p-4">
+                            <h3 className="text-center mb-3">
+                                New Game
+                            </h3>
+
+                            <p className="text-center text-muted">
+                                Choose your token.
+                            </p>
+
+                            <div className="d-flex gap-2 mb-4">
+                                <button
+                                    type="button"
+                                    className={`btn flex-fill ${
+                                        selectedToken ===
+                                        "X"
+                                            ? "btn-primary"
+                                            : "btn-outline-primary"
+                                    }`}
+                                    onClick={() =>
+                                        setSelectedToken(
+                                            "X"
+                                        )
+                                    }
+                                >
+                                    X
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={`btn flex-fill ${
+                                        selectedToken ===
+                                        "O"
+                                            ? "btn-primary"
+                                            : "btn-outline-primary"
+                                    }`}
+                                    onClick={() =>
+                                        setSelectedToken(
+                                            "O"
+                                        )
+                                    }
+                                >
+                                    O
+                                </button>
+                            </div>
+
+                            <div className="d-flex gap-2">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary flex-fill"
+                                    onClick={() =>
+                                        setShowTokenSelection(
+                                            false
+                                        )
+                                    }
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="btn btn-primary flex-fill"
+                                    onClick={
+                                        confirmNewGame
+                                    }
+                                >
+                                    Start Game
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
