@@ -47,7 +47,8 @@ export function createInitialGame(
     playerName: string,
     playerToken: Token
 ): GameState {
-    const computerToken: Token = playerToken === "X" ? "O" : "X";
+    const computerToken: Token =
+        playerToken === "X" ? "O" : "X";
 
     const game: GameState = {
         board: Array(9).fill(""),
@@ -69,7 +70,10 @@ export function createInitialGame(
     return game;
 }
 
-function checkWinner(board: Cell[], token: Token): boolean {
+function checkWinner(
+    board: Cell[],
+    token: Token
+): boolean {
     return winningCombinations.some(combination =>
         combination.every(index => board[index] === token)
     );
@@ -122,7 +126,10 @@ export function makePlayerMove(
     row: number,
     col: number
 ): GameState {
-    if (game.gameOver || game.currentTurn !== game.playerToken) {
+    if (
+        game.gameOver ||
+        game.currentTurn !== game.playerToken
+    ) {
         return game;
     }
 
@@ -166,15 +173,24 @@ export function makePlayerMove(
     return updatedGame;
 }
 
-export function makeComputerMove(game: GameState): GameState {
-    if (game.gameOver || game.currentTurn !== game.computerToken) {
+export function makeComputerMove(
+    game: GameState
+): GameState {
+    if (
+        game.gameOver ||
+        game.currentTurn !== game.computerToken
+    ) {
         return game;
     }
 
     const board = [...game.board];
+
     let moveIndex = -1;
 
-    if (!game.isComputerFirstMoveDone && game.isComputerFirstToMove) {
+    if (
+        !game.isComputerFirstMoveDone &&
+        game.isComputerFirstToMove
+    ) {
         if (board[0] === "") {
             moveIndex = 0;
         }
@@ -182,7 +198,7 @@ export function makeComputerMove(game: GameState): GameState {
         if (moveIndex !== -1) {
             board[moveIndex] = game.computerToken;
 
-            let updatedGame = {
+            let updatedGame: GameState = {
                 ...game,
                 board,
                 currentTurn: game.playerToken,
@@ -200,14 +216,20 @@ export function makeComputerMove(game: GameState): GameState {
         }
     }
 
-    moveIndex = findWinningMove(board, game.computerToken);
+    moveIndex = findWinningMove(
+        board,
+        game.computerToken
+    );
 
     if (moveIndex !== -1) {
         return placeComputerMove(game, moveIndex);
     }
 
     if (game.isComputerFirstMoveDone) {
-        moveIndex = findWinningMove(board, game.playerToken);
+        moveIndex = findWinningMove(
+            board,
+            game.playerToken
+        );
 
         if (moveIndex !== -1) {
             return placeComputerMove(game, moveIndex);
@@ -240,7 +262,9 @@ export function makeComputerMove(game: GameState): GameState {
     }
 
     const emptyCells = board
-        .map((cell, index) => (cell === "" ? index : -1))
+        .map((cell, index) =>
+            cell === "" ? index : -1
+        )
         .filter(index => index !== -1);
 
     if (emptyCells.length > 0) {
@@ -275,7 +299,8 @@ function placeComputerMove(
         board,
         currentTurn: game.playerToken,
         isComputerFirstMoveDone:
-            game.isComputerFirstMoveDone || markFirstMoveDone
+            game.isComputerFirstMoveDone ||
+            markFirstMoveDone
     };
 
     updatedGame = addMove(
@@ -288,7 +313,9 @@ function placeComputerMove(
     return finishComputerTurn(updatedGame);
 }
 
-function finishComputerTurn(game: GameState): GameState {
+function finishComputerTurn(
+    game: GameState
+): GameState {
     const result = getResultAfterMove(
         game.board,
         game.computerToken,
@@ -312,7 +339,9 @@ function findWinningMove(
     token: Token
 ): number {
     for (const combination of winningCombinations) {
-        const values = combination.map(index => board[index]);
+        const values = combination.map(
+            index => board[index]
+        );
 
         const tokenCount = values.filter(
             value => value === token
@@ -332,7 +361,9 @@ function findWinningMove(
     return -1;
 }
 
-function findStrategicMove(game: GameState): number {
+function findStrategicMove(
+    game: GameState
+): number {
     const board = game.board;
     const computer = game.computerToken;
     const player = game.playerToken;
